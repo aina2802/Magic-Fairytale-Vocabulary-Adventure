@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Fairytale Vocabulary Adventure 🐉</title>
+    <!-- Child-friendly fonts from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-purple: #9b59b6;
+            --magic-gold: #f1c40f;
+            --success-green: #2ecc71;
+            --error-red: #e74c3c;
+            --sky-blue: #87ceeb;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(180deg, var(--sky-blue) 0%, #e0f7fa 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Main Game Container */
+        #game-container {
+            width: 95%;
+            max-width: 600px;
+            height: 85vh;
+            background: rgba(255, 255, 255, 0.9);
+            border: 8px solid var(--white);
+            border-radius: 40px;
+            box-shadow: 0 20px 0 rgba(0,0,0,0.1), 0 0 50px rgba(0,0,0,0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            height: 100%;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Fredoka One', cursive;
+            color: var(--primary-purple);
+            font-size: 2.2rem;
+            margin: 10px 0;
+            text-shadow: 2px 2px 0px var(--white);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        /* Visual Elements */
+        .dragon-icon {
+            font-size: 80px;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .quiz-image {
+            width: 180px;
+            height: 180px;
+            background: var(--white);
+            border: 5px solid var(--magic-gold);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Buttons */
+        .btn-list {
+            display: grid;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn {
+            background: var(--white);
+            border: 4px solid var(--primary-purple);
+            padding: 15px 20px;
+            font-size: 1.5rem;
+            font-family: 'Fredoka One', cursive;
+            color: var(--primary-purple);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 0 var(--primary-purple);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            background: #fdf2ff;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--primary-purple);
+        }
+
+        .start-btn {
+            background: var(--magic-gold);
+            border-color: #d4ac0d;
+            color: white;
+            box-shadow: 0 6px 0 #d4ac0d;
+            padding: 20px 40px;
+            font-size: 2rem;
+        }
+
+        /* Feedback Overlay */
+        #feedback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 100;
+            font-family: 'Fredoka One', cursive;
+            font-size: 3rem;
+            pointer-events: none;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #feedback.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: red;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(90vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Color Ball Styling */
+        .color-ball {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff4d4d, #b30000);
+            box-shadow: inset -10px -10px 20px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        
+        <!-- START SCREEN -->
+        <div id="start-screen" class="screen active">
+            <div class="dragon-icon">🐲</div>
+            <h1>Magic Fairytale Adventure</h1>
+            <h2>Help the baby dragon find its home!</h2>
+            <button class="btn start-btn" onclick="goToLevel(1)">Start Adventure ✨</button>
+        </div>
+
+        <!-- LEVEL 1: CAT -->
+        <div id="level-1" class="screen">
+            <div class="quiz-image">🐱</div>
+            <h1>What is this?</h1>
+            <div class="btn-list">
+                <button class="btn" onclick="checkAnswer(this, false)">Dog</button>
+                <button class="btn" onclick="checkAnswer(this, true)">Cat</button>
+                <button class="btn" onclick="checkAnswer(this, false)">Bird</button>
+            </div>
+        </div>
+
+        <!-- LEVEL 2: RABBIT -->
+        <div id="level-2" class="screen">
+            <div class="quiz-image">🐰</div>
+            <h1>What is this?</h1>
+            <div class="btn-list">
+                <button class="btn" onclick="checkAnswer(this, true)">Rabbit</button>
+                <button class="btn" onclick="checkAnswer(this, false)">Elephant</button>
+                <button class="btn" onclick="checkAnswer(this, false)">Fish</button>
+            </div>
+        </div>
+
+        <!-- LEVEL 3: COLOUR -->
+        <div id="level-3" class="screen">
+            <div class="quiz-image">
+                <div class="color-ball"></div>
+            </div>
+            <h1>What colour is this?</h1>
+            <div class="btn-list">
+                <button class="btn" onclick="checkAnswer(this, false)">Blue</button>
+                <button class="btn" onclick="checkAnswer(this, true)">Red</button>
+                <button class="btn" onclick="checkAnswer(this, false)">Green</button>
+            </div>
+        </div>
+
+        <!-- FINAL SCREEN -->
+        <div id="final-screen" class="screen">
+            <div class="dragon-icon" style="font-size: 120px;">🏰🐲❤️</div>
+            <h1>Hooray! ✨</h1>
+            <h2>You saved the baby dragon!</h2>
+            <button class="btn start-btn" onclick="location.reload()">Play Again 🔄</button>
+        </div>
+
+        <!-- Feedback UI -->
+        <div id="feedback">Great job! 🌟</div>
+    </div>
+
+    <!-- AUDIO ELEMENTS (Generated via JS to keep single file) -->
+    <script>
+        // Sound System
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(frequency, type, duration) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playCorrectSound() {
+            playSound(523.25, 'sine', 0.5); // C5
+            setTimeout(() => playSound(659.25, 'sine', 0.5), 100); // E5
+        }
+
+        function playWrongSound() {
+            playSound(150, 'sawtooth', 0.3);
+        }
+
+        // Game Logic
+        let currentLevel = 0;
+
+        function goToLevel(level) {
+            currentLevel = level;
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            
+            // Show target screen
+            let targetId = level === 'final' ? 'final-screen' : `level-${level}`;
+            document.getElementById(targetId).classList.add('active');
+
+            if(level === 'final') {
+                spawnConfetti();
+            }
+        }
+
+        function checkAnswer(btn, isCorrect) {
+            const feedbackEl = document.getElementById('feedback');
+            
+            if (isCorrect) {
+                // Handle Correct
+                playCorrectSound();
+                feedbackEl.innerText = "Great Job! 🌟";
+                feedbackEl.style.color = "var(--success-green)";
+                feedbackEl.classList.add('show');
+                btn.style.background = "var(--success-green)";
+                btn.style.color = "white";
+
+                setTimeout(() => {
+                    feedbackEl.classList.remove('show');
+                    if (currentLevel < 3) {
+                        goToLevel(currentLevel + 1);
+                    } else {
+                        goToLevel('final');
+                    }
+                }, 1500);
+            } else {
+                // Handle Wrong
+                playWrongSound();
+                feedbackEl.innerText = "Try Again! ❤️";
+                feedbackEl.style.color = "var(--error-red)";
+                feedbackEl.classList.add('show');
+                
+                // Shake effect on button
+                btn.style.animation = "shake 0.3s";
+                setTimeout(() => {
+                    feedbackEl.classList.remove('show');
+                    btn.style.animation = "";
+                }, 1000);
+            }
+        }
+
+        // CSS Shake animation added via JS
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Celebration Animation
+        function spawnConfetti() {
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(confetti);
+            }
+        }
+    </script>
+</body>
+</html>
